@@ -1,4 +1,11 @@
 FROM node:lts
+
 WORKDIR /app
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
+
+EXPOSE 4500
+
+RUN yarn add global nodemon ts-node
+
+RUN yarn install
+
+CMD ["yarn", "dev"]

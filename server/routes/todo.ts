@@ -1,6 +1,7 @@
 import express, {Request, Response} from 'express';
 
 import todoModel from '../models/todoModel';
+import { isAuth } from '../middlewares/auth'
 
 let Router = express.Router();
 
@@ -20,11 +21,17 @@ Router.post('/', async (request: Request, response: Response) => {
     }
 });
 
-Router.get('/', (request: Request, response: Response) => {
-    response.status(200).json({"msg": "List todos page !"})
+Router.get('/', async (request: Request, response: Response) => {
+    try {
+        let todos = await todoModel.find({});
+
+        return response.status(200).json(todos);
+    } catch(error) {
+        return response.status(500).json({msg: error});
+    }
 });
 
-Router.get('/:todoId', async (request: Request, response: Response) => {
+Router.get('/:todoId', isAuth, async (request: Request, response: Response) => {
     let { todoId } = request.params;
     
     try {
@@ -38,7 +45,7 @@ Router.get('/:todoId', async (request: Request, response: Response) => {
     }
 });
 
-Router.delete('/:todoId', async (request: Request, response: Response) => {
+Router.delete('/:todoId', isAuth, async (request: Request, response: Response) => {
     let { todoId } = request.params;
 
     try {
@@ -52,7 +59,7 @@ Router.delete('/:todoId', async (request: Request, response: Response) => {
     }
 });
 
-Router.put('/:todoId', async (request: Request, response: Response) => {
+Router.put('/:todoId', isAuth, async (request: Request, response: Response) => {
     let { todoId } = request.params;
     const {label, description} = request.body
 
